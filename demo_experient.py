@@ -48,7 +48,7 @@ def main(yolo):
         w = int(video_capture.get(3))
         h = int(video_capture.get(4))
         fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-        out = cv2.VideoWriter('output5.avi', fourcc, 15, (w, h))
+        out = cv2.VideoWriter('./Output_info_Joe/output_demo.avi', fourcc, 15, (w, h))
         list_file = open('detection.txt', 'w')
         frame_index = -1
 
@@ -92,11 +92,11 @@ def main(yolo):
                 cv2.putText(frame, "Joe", (int(bbox[0]), int(bbox[1])), 0,
                             5e-3 * 200, (0, 255, 0), 2)
             elif track.track_id == 2:
-                cv2.putText(frame, "Jimmy", (int(bbox[0]), int(bbox[1])), 0,
-                            5e-3 * 200, (0, 255, 0), 2)
-            elif track.track_id == 3:
                 cv2.putText(frame, "Terence", (int(bbox[0]), int(bbox[1])), 0,
                             5e-3 * 200, (0, 255, 0), 2)
+            # elif track.track_id == 3:
+            #     cv2.putText(frame, "Terence", (int(bbox[0]), int(bbox[1])), 0,
+            #                 5e-3 * 200, (0, 255, 0), 2)
             else:
                 cv2.putText(frame, str(track.track_id),
                             (int(bbox[0]), int(bbox[1])), 0, 5e-3 * 200,
