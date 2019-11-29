@@ -38,8 +38,7 @@ def main(yolo):
     metric = nn_matching.NearestNeighborDistanceMetric("cosine", max_cosine_distance, nn_budget)
     tracker = Tracker(metric)
 
-    writeVideo_flag = True 
-    
+    writeVideo_flag = True
     video_capture = cv2.VideoCapture(0)
 
     if writeVideo_flag:

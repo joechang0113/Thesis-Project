@@ -12,24 +12,23 @@ from collections import defaultdict
 
 import numpy as np
 from keras import backend as K
-from keras.layers import (Conv2D, Input, ZeroPadding2D, Add,
-                          UpSampling2D, Concatenate)
+from keras.layers import (Conv2D, Input, ZeroPadding2D, Add, UpSampling2D,
+                          Concatenate)
 from keras.layers.advanced_activations import LeakyReLU
 from keras.layers.normalization import BatchNormalization
 from keras.models import Model
 from keras.regularizers import l2
 from keras.utils.vis_utils import plot_model as plot
 
-
 parser = argparse.ArgumentParser(description='Darknet To Keras Converter.')
 parser.add_argument('config_path', help='Path to Darknet cfg file.')
 parser.add_argument('weights_path', help='Path to Darknet weights file.')
 parser.add_argument('output_path', help='Path to output Keras model file.')
-parser.add_argument(
-    '-p',
-    '--plot_model',
-    help='Plot generated Keras model and save as image.',
-    action='store_true')
+parser.add_argument('-p',
+                    '--plot_model',
+                    help='Plot generated Keras model and save as image.',
+                    action='store_true')
+
 
 def unique_config_sections(config_file):
     """Convert all config sections to have unique names.
@@ -37,7 +36,7 @@ def unique_config_sections(config_file):
     Adds unique suffixes to config sections for compability with configparser.
     """
     section_counters = defaultdict(int)
-    output_stream = io.BytesIO() #io.StringIO()
+    output_stream = io.BytesIO()  #io.StringIO()
     with open(config_file) as fin:
         for line in fin:
             if line.startswith('['):
@@ -48,6 +47,7 @@ def unique_config_sections(config_file):
             output_stream.write(line)
     output_stream.seek(0)
     return output_stream
+
 
 # %%
 def _main(args):
@@ -66,12 +66,17 @@ def _main(args):
     # Load weights and config.
     print('Loading weights.')
     weights_file = open(weights_path, 'rb')
-    major, minor, revision = np.ndarray(
-        shape=(3, ), dtype='int32', buffer=weights_file.read(12))
-    if (major*10+minor)>=2 and major<1000 and minor<1000:
-        seen = np.ndarray(shape=(1,), dtype='int64', buffer=weights_file.read(8))
+    major, minor, revision = np.ndarray(shape=(3, ),
+                                        dtype='int32',
+                                        buffer=weights_file.read(12))
+    if (major * 10 + minor) >= 2 and major < 1000 and minor < 1000:
+        seen = np.ndarray(shape=(1, ),
+                          dtype='int64',
+                          buffer=weights_file.read(8))
     else:
-        seen = np.ndarray(shape=(1,), dtype='int32', buffer=weights_file.read(4))
+        seen = np.ndarray(shape=(1, ),
+                          dtype='int32',
+                          buffer=weights_file.read(4))
     print('Weights Header: ', major, minor, revision, seen)
 
     print('Parsing Darknet config.')
@@ -109,20 +114,18 @@ def _main(args):
             darknet_w_shape = (filters, weights_shape[2], size, size)
             weights_size = np.product(weights_shape)
 
-            print('conv2d', 'bn'
-                  if batch_normalize else '  ', activation, weights_shape)
+            print('conv2d', 'bn' if batch_normalize else '  ', activation,
+                  weights_shape)
 
-            conv_bias = np.ndarray(
-                shape=(filters, ),
-                dtype='float32',
-                buffer=weights_file.read(filters * 4))
+            conv_bias = np.ndarray(shape=(filters, ),
+                                   dtype='float32',
+                                   buffer=weights_file.read(filters * 4))
             count += filters
 
             if batch_normalize:
-                bn_weights = np.ndarray(
-                    shape=(3, filters),
-                    dtype='float32',
-                    buffer=weights_file.read(filters * 12))
+                bn_weights = np.ndarray(shape=(3, filters),
+                                        dtype='float32',
+                                        buffer=weights_file.read(filters * 12))
                 count += 3 * filters
 
                 bn_weight_list = [
@@ -132,10 +135,10 @@ def _main(args):
                     bn_weights[2]  # running var
                 ]
 
-            conv_weights = np.ndarray(
-                shape=darknet_w_shape,
-                dtype='float32',
-                buffer=weights_file.read(weights_size * 4))
+            conv_weights = np.ndarray(shape=darknet_w_shape,
+                                      dtype='float32',
+                                      buffer=weights_file.read(weights_size *
+                                                               4))
             count += weights_size
 
             # DarkNet conv_weights are serialized Caffe-style:
@@ -157,17 +160,16 @@ def _main(args):
                         activation, section))
 
             # Create Conv2D layer
-            if stride>1:
+            if stride > 1:
                 # Darknet uses left and top padding instead of 'same' mode
-                prev_layer = ZeroPadding2D(((1,0),(1,0)))(prev_layer)
-            conv_layer = (Conv2D(
-                filters, (size, size),
-                strides=(stride, stride),
-                kernel_regularizer=l2(weight_decay),
-                use_bias=not batch_normalize,
-                weights=conv_weights,
-                activation=act_fn,
-                padding=padding))(prev_layer)
+                prev_layer = ZeroPadding2D(((1, 0), (1, 0)))(prev_layer)
+            conv_layer = (Conv2D(filters, (size, size),
+                                 strides=(stride, stride),
+                                 kernel_regularizer=l2(weight_decay),
+                                 use_bias=not batch_normalize,
+                                 weights=conv_weights,
+                                 activation=act_fn,
+                                 padding=padding))(prev_layer)
 
             if batch_normalize:
                 conv_layer = (BatchNormalization(
@@ -200,7 +202,7 @@ def _main(args):
             assert activation == 'linear', 'Only linear activation supported.'
             all_layers.append(Add()([all_layers[index], prev_layer]))
             prev_layer = all_layers[-1]
-        
+
         elif section.startswith('upsample'):
             stride = int(cfg_parser[section]['stride'])
             assert stride == 2, 'Only stride=2 supported.'
@@ -208,7 +210,7 @@ def _main(args):
             prev_layer = all_layers[-1]
 
         elif section.startswith('yolo'):
-            out_index.append(len(all_layers)-1)
+            out_index.append(len(all_layers) - 1)
             all_layers.append(None)
             prev_layer = all_layers[-1]
 
@@ -220,15 +222,16 @@ def _main(args):
                 'Unsupported section header type: {}'.format(section))
 
     # Create and save model.
-    model = Model(inputs=input_layer, outputs=[all_layers[i] for i in out_index])
+    model = Model(inputs=input_layer,
+                  outputs=[all_layers[i] for i in out_index])
     print(model.summary())
     model.save('{}'.format(output_path))
     print('Saved Keras model to {}'.format(output_path))
     # Check to see if all weights have been read.
     remaining_weights = len(weights_file.read()) / 4
     weights_file.close()
-    print('Read {} of {} from Darknet weights.'.format(count, count +
-                                                       remaining_weights))
+    print('Read {} of {} from Darknet weights.'.format(
+        count, count + remaining_weights))
     if remaining_weights > 0:
         print('Warning: {} unused weights'.format(remaining_weights))
 
