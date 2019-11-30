@@ -6,7 +6,7 @@ from __future__ import division, print_function, absolute_import
 import time
 import csv
 import os
-from timeit import time
+# from timeit import time
 import warnings
 import sys
 import numpy.core.multiarray
@@ -54,7 +54,7 @@ def main(yolo):
         w = int(video_capture.get(3))
         h = int(video_capture.get(4))
         fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-        out = cv2.VideoWriter('output_test_cross0510_G.avi', fourcc, 15,
+        out = cv2.VideoWriter('./Output_info_Joe/pressG.avi', fourcc, 15,
                               (w, h))
         list_file = open('detection.txt', 'w')
         frame_index = -1
@@ -120,14 +120,14 @@ def main(yolo):
                       globals()['trackerId' + str(tracker_Id)])
 
                 # Save file to excel with csv in output
-                with open('./output_process_0510_G.csv', 'a') as csvfile:
+                with open('./Output_info_Joe/pressG_localtime.csv', 'a') as csvfile:
                     writer = csv.writer(csvfile)
                     writer.writerow([
                         localtime, 'trackerId' + str(tracker_Id),
                         globals()['trackerId' + str(tracker_Id)]
                     ])
                 #Save XY to excel with csv in outputXY
-                with open('./output_XYBegin_0510_G.csv', 'w') as csvfile:
+                with open('./Output_info_Joe/pressG_Begin.csv', 'w') as csvfile:
                     writer = csv.writer(csvfile)
                     writer.writerow(
                         ['XYBegin',
@@ -161,7 +161,7 @@ def main(yolo):
         # Press Q to stop!
         if cv2.waitKey(1) & 0xFF == ord('q'):
             # Save file to excel with csv in output
-            with open('./output_test_cross0507_G.csv', 'w') as csvfile:
+            with open('./Output_info_Joe/pressG.csv', 'w') as csvfile:
                 for i in trackId_list:
                     writer = csv.writer(csvfile)
                     writer.writerow([
