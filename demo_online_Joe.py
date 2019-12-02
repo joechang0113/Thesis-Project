@@ -76,8 +76,6 @@ def main(yolo):
                 '.avi', fourcc, 15, (w, h))
             list_file = open('detection.txt', 'w')
             frame_index = -1
-            list_file = open('detection.txt', 'w')
-            frame_index = -1
 
     fps = 0.0
     number = 0
