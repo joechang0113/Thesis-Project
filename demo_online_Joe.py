@@ -61,15 +61,12 @@ def main(yolo):
         h = int(video_capture.get(4))
         fourcc = cv2.VideoWriter_fourcc(*'MJPG')
         if not os.path.isdir(path_video):
-            os.makedirs(path_video)  # 多層次建立目錄
-            # with open(path_video + '/' + str(local_date + local_day + local_time) + '.avi', 'w') as csvfile:
-            # out = cv2.VideoWriter('./Output_info_Joe/online_2.avi', fourcc, 15, (w, h))
+            os.makedirs(path_video)  # 建立多層次建立目錄
             out = cv2.VideoWriter(
                 path_video + '/' + str(local_date + local_day + local_time) +
                 '.avi', fourcc, 15, (w, h))
             list_file = open('detection.txt', 'w')
             frame_index = -1
-            # print('context: {}'.format(out))
         else:
             out = cv2.VideoWriter(
                 path_video + '/' + str(local_date + local_day + local_time) +
@@ -138,10 +135,9 @@ def main(yolo):
                 print("localtime:", localtime)
                 print('save coordinate now !!!')  # some bug
                 w_2 = int(bbox[0]) + abs((int(bbox[2]) - int(bbox[0])) / 2)
-                # pre_w_2 = w_2
                 movecheck = abs(int(cur_w_2) - int(w_2))
 
-                # ## move check ###
+                # move check ---begin
 
                 if movecheck > 3:
                     globals()['trackerId' + str(tracker_Id)].append(["1"])
@@ -152,14 +148,14 @@ def main(yolo):
                 print(cur_w_2)
                 print(w_2)
                 w_2 = cur_w_2
-                # ## move check ###
+
+                # move check end---
 
                 globals()['trackerId' + str(tracker_Id)].append(
                     [w_2, int(bbox[1])])
                 globals()['trackerId' + str(tracker_Id) +
                           '_time'].append(localtime)
                 globals()['timeId' + str(tracker_Id)].append(localtime)
-                # globals()['trackerId'+str(tracker_Id)].append([int(bbox[0]),int(bbox[2])])
                 print('trackerId' + str(tracker_Id),
                       globals()['trackerId' + str(tracker_Id)])
                 print('trackerId' + str(tracker_Id) + '_time',
@@ -231,9 +227,7 @@ def main(yolo):
                         writer.writerow(
                             ['timeId' + str(i),
                              globals()['timeId' + str(i)]])
-                        # writer.writerow([globals()['trackerId'+str(i)]]) #id
-                        # writer.writerow(['trackerId'+str(i)]) #xy
-                        # csvfile.write('\n')
+                    print('context: {}'.format(trackId_list))
                 break
             else:
                 with open(
@@ -251,7 +245,7 @@ def main(yolo):
                         writer.writerow(
                             ['timeId' + str(i),
                              globals()['timeId' + str(i)]])
-                    # print('context: {}'.format(data))
+                    print('context: {}'.format(trackId_list))
                 break
 
     video_capture.release()
