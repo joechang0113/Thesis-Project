@@ -21,7 +21,6 @@ from tools import generate_detections as gdet
 from deep_sort.detection import Detection as ddet
 import keyboard
 import datetime
-# import time
 
 warnings.filterwarnings('ignore')
 
@@ -47,6 +46,7 @@ def main(yolo):
     writeVideo_flag = True
 
     video_capture = cv2.VideoCapture(0)
+
     # localtime for mkdir
     local_date = time.strftime("%Y", time.localtime())
     local_day = time.strftime("%m%d", time.localtime())
@@ -212,7 +212,7 @@ def main(yolo):
         if cv2.waitKey(1) & 0xFF == ord('q'):
             # Save file to excel with csv in output
             if not os.path.isdir(path):
-                os.makedirs(path)  # 多層次建立目錄
+                os.makedirs(path)  # 建立多層次建立目錄
                 with open(
                         path + '/' + str(local_date + local_day + local_time) +
                         '.csv', 'w') as csvfile:
